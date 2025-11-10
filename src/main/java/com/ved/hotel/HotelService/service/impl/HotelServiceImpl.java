@@ -1,6 +1,7 @@
 package com.ved.hotel.HotelService.service.impl;
 
 import com.ved.hotel.HotelService.exception.ResourceNotFoundException;
+import com.ved.hotel.HotelService.exception.DuplicateEntryException;
 import com.ved.hotel.HotelService.model.Hotel;
 import com.ved.hotel.HotelService.repository.HotelRepository;
 import com.ved.hotel.HotelService.service.HotelService;
@@ -17,8 +18,12 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public Hotel create(Hotel hotel) {
+        if (hotelRepository.findByName(hotel.getName()).isPresent()) {
+            throw new DuplicateEntryException("Hotel with name " + hotel.getName() + " already exists");
+        }
         String randomHotelId = java.util.UUID.randomUUID().toString();
         hotel.setId(randomHotelId);
+
         return hotelRepository.save(hotel);
     }
 
